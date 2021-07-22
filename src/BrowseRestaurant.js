@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, A
 import Footer from "./Footer";
 //import Header from "./Header";
 import Axios from 'axios';
-
 //Browse Restaurant Page
 const BrowseRestaurants = ({ navigation }) => {
 
@@ -12,8 +11,11 @@ const BrowseRestaurants = ({ navigation }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dummyRestaurant, setDummyRestaurant] = useState([]);
   const [loading, setLoading] = useState(true);
-  //const [offset, setOffset] = useState(1);
   const [token, setToken] = useState("");
+
+  const [isLoadMore, setLoadMore] = useState(false);
+
+
 
   useEffect(() => getData(false, token), []);
 
@@ -34,35 +36,59 @@ const BrowseRestaurants = ({ navigation }) => {
         console.log('response', response.data)
         setToken(response.data.next_page_token)
         //alert(category);
-        //setOffset(offset + 1);
         setRestaurant([...restaurant, ...response.data.result]);
         setDummyRestaurant([...dummyRestaurant, ...response.data.result]);
+
+        setLoadMore(response.data.result.length < 1 && true);
         setLoading(false);
+
+
+        // {restaurant.map((item, index) => {
+        //   {index === restaurant.length - 1 && setLoading(false) }
+        // })}
       })
+
       .catch(function (error) {
         alert(error.message);
       })
   }
 
   function renderFooter() {
+    if (isLoadMore === false) {
 
-    return (
-      //Footer View with Load More button
-      <View style={styles.footerButton}>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={() => getData(true, token)}
-          //On Click of button load more data
-          style={styles.loadMoreBtn}>
-          <Text style={styles.btnText}>{loading ? "Loading" : "Load More"}</Text>
-          {loading ? (
-            <ActivityIndicator
-              color="white"
-              style={{ marginLeft: 8 }} />
-          ) : null}
-        </TouchableOpacity>
-      </View>
-    )
+      return (
+        //Footer View with Load More button
+
+        // <View>
+        //   {loading && <Text style={{color: "black"}}>Loading more...</Text>}
+        // </View>
+
+
+
+        <View style={styles.footerButton}>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => getData(true, token)}
+            //disabled={!loading}
+            // disabled={restaurant.map((item, index) => {
+            //   console.log(index);
+            //   { index === restaurant.length - 1 && true }
+            // })}
+            //On Click of button load more data
+            style={styles.loadMoreBtn}>
+            <Text style={styles.btnText}>{loading ? "Loading" : "Load More"}</Text>
+            {loading ? (
+              <ActivityIndicator
+                color="white"
+                style={{ marginLeft: 8 }} />
+            ) : null}
+
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return null
+    }
 
   }
 
@@ -170,7 +196,7 @@ const BrowseRestaurants = ({ navigation }) => {
         //extraData={restaurant}
         keyExtractor={item => item.id}
         ListFooterComponent={renderFooter}
-        //onEndReached={getData}
+      //onEndReached={() => getData()}
       />
       {/* <View style={styles.footerButton}>
         <TouchableOpacity
