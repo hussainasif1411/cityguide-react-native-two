@@ -7,15 +7,13 @@ import Axios from 'axios';
 const BrowseRestaurants = ({ navigation }) => {
 
   const [restaurant, setRestaurant] = useState([]);
-  const category = navigation.getParam('categoryName');
   const [searchTerm, setSearchTerm] = useState("");
   const [dummyRestaurant, setDummyRestaurant] = useState([]);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState("");
-
   const [isLoadMore, setLoadMore] = useState(false);
 
-
+  const category = navigation.getParam('categoryName');
 
   useEffect(() => getData(false, token), []);
 
@@ -114,7 +112,13 @@ const BrowseRestaurants = ({ navigation }) => {
   const renderItem = ({ item, i }) => (
 
     <View key={i}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("ParticularItem", {
+        itemImage: item.image,
+        itemName: item.name,
+        itemAddress: item.address,
+        itemRating: item.rating,
+        itemMap: item.googleMapLocation
+      })}>
         <View style={styles.restaurantRowStyle}>
 
           <View style={{ width: "20%" }}>
